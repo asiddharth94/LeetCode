@@ -4,36 +4,36 @@
  * @return {number}
  */
 var findMedianSortedArrays = function (nums1, nums2) {
-  const combinedLength = nums1.length + nums2.length;
-  let i = 0,
-    j = 0;
+  //     we'll binary search the smaller array
+  if (nums2.length < nums1.length) return findMedianSortedArrays(nums2, nums1);
 
-  const mergedArray = [];
+  const lengthOne = nums1.length;
+  const lengthTwo = nums2.length;
 
-  while (i < nums1.length && j < nums2.length) {
-    if (nums1[i] <= nums2[j]) {
-      mergedArray.push(nums1[i++]);
+  let low = 0,
+    high = lengthOne;
+
+  while (low <= high) {
+    const cut1 = Math.floor((low + high) / 2);
+    const cut2 = Math.floor((lengthOne + lengthTwo + 1) / 2) - cut1;
+
+    const left1 = cut1 === 0 ? Number.MIN_SAFE_INTEGER : nums1[cut1 - 1];
+    const left2 = cut2 === 0 ? Number.MIN_SAFE_INTEGER : nums2[cut2 - 1];
+
+    const right1 = cut1 === lengthOne ? Number.MAX_SAFE_INTEGER : nums1[cut1];
+    const right2 = cut2 === lengthTwo ? Number.MAX_SAFE_INTEGER : nums2[cut2];
+
+    if (left1 <= right2 && left2 <= right1) {
+      if ((lengthOne + lengthTwo) % 2 === 0) {
+        return (Math.max(left1, left2) + Math.min(right1, right2)) / 2;
+      } else {
+        return Math.max(left1, left2);
+      }
+    } else if (left1 > right2) {
+      high = cut1 - 1;
     } else {
-      mergedArray.push(nums2[j++]);
+      low = cut1 + 1;
     }
   }
-
-  while (i < nums1.length) {
-    mergedArray.push(nums1[i++]);
-  }
-
-  while (j < nums2.length) {
-    mergedArray.push(nums2[j++]);
-  }
-
-  let medIndex, median;
-  if (combinedLength % 2 !== 0) {
-    midIndex = Math.floor(combinedLength / 2);
-    median = mergedArray[midIndex];
-  } else {
-    midIndex = combinedLength / 2;
-    median = (mergedArray[midIndex] + mergedArray[midIndex - 1]) / 2;
-  }
-
-  return median;
+  return 0;
 };
